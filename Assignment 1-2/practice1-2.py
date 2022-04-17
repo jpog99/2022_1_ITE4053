@@ -3,7 +3,7 @@ import random
 import math
 
 # number of train samples
-m = 10000
+m = 1000
 
 #number of test samples
 n = 1000

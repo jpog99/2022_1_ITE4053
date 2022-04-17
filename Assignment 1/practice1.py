@@ -18,14 +18,11 @@ x2_test = []
 y_test = []
 
 # number of iterations
-K = 5000
+K = 50000
 
 #alpha (learning rate)
-alpha = 1
+alpha = 0.1
 
-w1 = random.random()
-w2 = random.random()
-b = random.random()
 
 # functions
 def sigmoid(z):
@@ -57,36 +54,26 @@ for i in range(n):
         y_test.append(0)
 
 # === STEP 2 ===
+w1 = random.random()
+w2 = random.random()
+W = np.array([w1, w2])
+b = random.random()
 for j in range(K):
-    W = np.array([w1, w2])
-    J = 0
-    dw1 = 0
-    dw2 = 0
-    db = 0
-    for i in range(m):
-        #foward propagation
-        x = np.array([x1_train[i], x2_train[i]])
-        z = np.dot(W,x) + b
-        a = sigmoid(z)
-        J += cross_entropy_loss(a, y_train[i])
-        # backward propagation
-        dz = a - y_train[i]
-        dw1 += x1_train[i] * dz
-        dw2 += x2_train[i] * dz
-        db += dz
-    J /= m
-    dw1 /= m
-    dw2 /= m
-    db /= m
+    x = np.array([x1_train, x2_train])
+    Z = np.dot(W,x) + b
+    A = sigmoid(Z)
+
+    dZ = A - y_train
+    dW = np.dot(x,np.transpose(dZ))/m
+    dB = np.sum(dZ)/m
 
     #update W, b
-    w1 -= alpha * dw1
-    w2 -= alpha * dw2
-    b -= alpha * db
+    W -= alpha * dW
+    b -= alpha * dB
 
     #print W, b every 500 iteration
     if(j % 500 == 0):
-        print(f"[w1, w2, b] = [{w1}, {w2}, {b}]")
+        print(f"[w1, w2, b] = [{W[0]}, {W[1]}, {b}]")
     # m cost -> J(W,b)
     x_train = np.array((x1_train[i], x2_train[i]))
     y_hat = model(x_train, W, b)
@@ -104,12 +91,11 @@ for i in range(n):
 print("Cost with n test samples = ", n_cost / n)
 
 # === STEP 2-4 ===
-w_result = np.array([w1, w2])
 
 correct_predict_train = 0
 for i in range(m):
     x = np.array([x1_train[i], x2_train[i]])
-    z = np.dot(w_result, x)
+    z = np.dot(W, x)
     a = sigmoid(z)
     if(z > 0.5 and y_train[i] == 1):
         correct_predict_train += 1
@@ -122,7 +108,7 @@ print("Accuracy for 'm' train samples: " + str(train_accuracy) + "%")
 correct_predict_test = 0
 for i in range(n):
     x = np.array([x1_test[i], x2_test[i]])
-    z = np.dot(w_result, x)
+    z = np.dot(W, x)
     a = sigmoid(z)
     if(z > 0.5 and y_test[i] == 1):
         correct_predict_test += 1
