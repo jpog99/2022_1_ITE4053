@@ -32,8 +32,11 @@ b2 = random.random()
 def sigmoid(z):
     return 1 / (1 + np.exp(-z + 1e-10))
 
+def sigmoid_dev(z):
+    return sigmoid(z) * (1-sigmoid(z))
+
 def cross_entropy_loss(y_hat, y):
-    return -(y*np.log10(y_hat + 1e-10) + (1-y)*np.log10(1-y_hat + 1e-10)) #added 1e-10 to avoid NaN problem
+    return (y*np.log10(y_hat + 1e-10) + (1-y)*np.log10(1-y_hat + 1e-10)) #added 1e-10 to avoid NaN problem
 
 def model(x, W, b):
     return sigmoid(np.dot(W, x) + b)
@@ -59,10 +62,21 @@ for i in range(n):
     else:
         y_test.append(0)
 
+def normalize(x):
+    temp = x
+    mean = np.sum(x)/m
+    temp = np.subtract(temp,mean)
+    var = np.sum(np.dot(temp,temp.T))/m
+    temp /= np.sqrt(var)
+    return temp
+
+
 x_train = np.array(x_train).reshape(1, len(x_train))
 y_train = np.array(y_train).reshape(1, len(y_train))
 x_test = np.array(x_test).reshape(1, len(x_test))
 y_test = np.array(y_test).reshape(1, len(y_test))
+
+cost_a = [] # for plotting cost graph
 
 # === STEP 2 ===
 for j in range(K):
@@ -75,10 +89,10 @@ for j in range(K):
     # backward prop
     dZ2 = A2 - y_train
     dw2 = np.dot(dZ2, A1.T) / m
-    db2 = np.sum(dZ2, axis=1, keepdims=True) / m
-    dZ1 = np.dot(w2, dZ2) * sigmoid(Z1)
+    db2 = np.sum(dZ2) / m
+    dZ1 = np.multiply(np.dot(w2, dZ2) , sigmoid_dev(Z1))
     dW1 = np.dot(dZ1, x_train.T) / m
-    db1 = np.sum(dZ1, axis=1, keepdims=True)
+    db1 = np.sum(dZ1)
 
     #update param
     w1 -= alpha * dW1
@@ -86,26 +100,25 @@ for j in range(K):
     w2 -= alpha * dw2
     b2 -= alpha * db2
 
+    cost = -np.sum((cross_entropy_loss(A2, y_train))) / m
+    cost_a.append(cost)
+
     # Step 2-1, 2-2
     #print W, b every 500 iteration
     if(j % 500 == 0):
         print(f"[w1, b1, w2, b2] = [{w1}, {b1}, {w2}, {b2}]")
-        cost = np.sum((-cross_entropy_loss(A2, y_train))) / m
         print("Cost: %f" % cost)
+
 
 # step 2-3
 Z1 = model(x_test, w1, b1)
 A1 = sigmoid(Z1)
 Z2 = model(A1, w2, b2)
 A2 = sigmoid(Z2)
-n_cost = np.sum((-cross_entropy_loss(A2, y_test))) / n
+n_cost = -np.sum((cross_entropy_loss(A2, y_test))) / n
 print("Cost with n test samples = ", n_cost)
 
 # === STEP 2-4 ===
-# w1 =-1813.69878086
-# w2 = 8.1351926
-# b1 = 330901.03284608
-# b2 = -4.34741014
 correct_predict_train = 0
 Z1 = np.dot(w1, x_train) + b1
 A1 = sigmoid(Z1)
@@ -132,3 +145,11 @@ for i in range(n):
         correct_predict_test += 1
 test_accuracy = correct_predict_test / n * 100
 print("Accuracy for 'n' test samples: " + str(test_accuracy) + "%")
+
+### UNCOMMENT TO PLOT COST GRAPH ###
+# import matplotlib.pyplot as plt
+# plt.title("Cos Dataset(m = 10000, n = 1000, K = 5000, lr = 0.01)")
+# plt.plot(cost_a)
+# plt.xlabel("# Iterations")
+# plt.ylabel("Cost")
+# plt.show()

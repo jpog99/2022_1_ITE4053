@@ -18,10 +18,10 @@ x2_test = []
 y_test = []
 
 # number of iterations
-K = 50000
+K = 5000
 
 #alpha (learning rate)
-alpha = 0.1
+alpha = 1
 
 
 # functions
@@ -97,9 +97,9 @@ for i in range(m):
     x = np.array([x1_train[i], x2_train[i]])
     z = np.dot(W, x)
     a = sigmoid(z)
-    if(z > 0.5 and y_train[i] == 1):
+    if(a > 0.5 and y_train[i] == 1):
         correct_predict_train += 1
-    elif(z <= 0.5 and y_train[i] == 0):
+    elif(a <= 0.5 and y_train[i] == 0):
         correct_predict_train += 1
 train_accuracy = correct_predict_train / m * 100
 print("Accuracy for 'm' train samples: " + str(train_accuracy) + "%")
@@ -110,9 +110,9 @@ for i in range(n):
     x = np.array([x1_test[i], x2_test[i]])
     z = np.dot(W, x)
     a = sigmoid(z)
-    if(z > 0.5 and y_test[i] == 1):
+    if(a > 0.5 and y_test[i] == 1):
         correct_predict_test += 1
-    elif(z <= 0.5 and y_test[i] == 0):
+    elif(a <= 0.5 and y_test[i] == 0):
         correct_predict_test += 1
 test_accuracy = correct_predict_test / n * 100
 print("Accuracy for 'n' test samples: " + str(test_accuracy) + "%")
