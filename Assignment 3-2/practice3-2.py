@@ -20,23 +20,15 @@ y_test = []
 K = 5000
 
 #alpha (learning rate)
-alpha = 0.5
+alpha = 0.01
 
 # parameters
-# w1 = random.random()
-# b1 = random.random()
-# w2 = random.random()
-# b2 = random.random()
-# w3 = random.random()
-# b3 = random.random()
 
 W1 = np.random.rand(2,1)
 B1 = np.random.rand(2,1)
 W2 = np.random.rand(1,2)
 B2 = np.random.rand(1,1)
 
-# W1=np.random.normal(0,0.01,(2,1))
-# W2=np.random.normal(0,0.01,(1,10))
 # functions
 def sigmoid(z):
     return 1 / (1 + np.exp(-z + 1e-10))
@@ -54,9 +46,9 @@ def model(x, W, b):
 #generate m train samples
 for i in range(m):
     degree_value = random.uniform(0, 360)
-    sine_value = math.cos(math.radians(degree_value))
+    cos_value = math.cos(math.radians(degree_value))
     x_train.append(degree_value)
-    if sine_value > 0:
+    if cos_value > 0:
         y_train.append(1)
     else:
         y_train.append(0)
@@ -64,9 +56,9 @@ for i in range(m):
 #generate n test samples
 for i in range(n):
     degree_value = random.uniform(0, 360)
-    sine_value = math.cos(math.radians(degree_value))
+    cos_value = math.cos(math.radians(degree_value))
     x_test.append(degree_value)
-    if sine_value > 0:
+    if cos_value > 0:
         y_test.append(1)
     else:
         y_test.append(0)
@@ -148,9 +140,9 @@ test_accuracy = correct_predict_test / n * 100
 print("Accuracy for 'n' test samples: " + str(test_accuracy) + "%")
 
 ### UNCOMMENT TO PLOT COST GRAPH ###
-import matplotlib.pyplot as plt
-plt.title("Cos Dataset(m = 10000, n = 1000, K = 5000, lr = 0.01)")
-plt.plot(cost_a)
-plt.xlabel("# Iterations")
-plt.ylabel("Cost")
-plt.show()
+# import matplotlib.pyplot as plt
+# plt.title("Cos Dataset(m = 10000, n = 1000, K = 5000, lr = 0.01)")
+# plt.plot(cost_a)
+# plt.xlabel("# Iterations")
+# plt.ylabel("Cost")
+# plt.show()
